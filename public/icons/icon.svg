@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Red background fills entire square (maskable safe zone) -->
+  <rect width="512" height="512" fill="#c0392b"/>
+  <!-- White 写 character centered -->
+  <text
+    x="256"
+    y="360"
+    font-family="'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif"
+    font-size="300"
+    fill="white"
+    text-anchor="middle"
+  >写</text>
+</svg>
