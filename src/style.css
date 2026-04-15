@@ -258,7 +258,7 @@ section.active {
   border-bottom: 2px solid var(--red);
   background: transparent;
   outline: none;
-  color: transparent;
+  color: var(--text);
   caret-color: var(--red);
   text-align: left;
   padding: 0.1rem 0;
