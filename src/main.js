@@ -1,5 +1,30 @@
 import wubiData from 'wubi-code-data'
+import HanziWriter from 'hanzi-writer'
 const getWubi = ch => wubiData['取码'](ch, '86') || null
+
+const HANZI_CDN = 'https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0'
+
+function charDataLoader(char, onComplete, onError) {
+  fetch(`${HANZI_CDN}/${encodeURIComponent(char)}.json`)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json() })
+    .then(onComplete)
+    .catch(onError)
+}
+
+function makeStrokeChar(ch) {
+  const el = document.createElement('div')
+  el.className = 'dict-stroke-char'
+  const writer = HanziWriter.create(el, ch, {
+    width: 60, height: 60, padding: 4,
+    showOutline: true,
+    strokeColor: '#1a1a1a',
+    outlineColor: '#ddd',
+    radicalColor: '#c0392b',
+    charDataLoader,
+  })
+  writer.animateCharacter()
+  return el
+}
 
 // ── Dictionary (lazy-loaded on first use) ────────────────────────────────────
 let dictData = null
@@ -355,12 +380,37 @@ async function showDictEntry(sentence, clickedIndex) {
     }
 
     const { word, entries } = result
-    const parts = [`<span class="dict-word">${escapeHtml(word)}</span>`]
+    dictPanel.innerHTML = ''
+
+    // Stroke order diagrams (one per character, animated)
+    const strokesEl = document.createElement('div')
+    strokesEl.className = 'dict-strokes'
+    for (const ch of [...word]) strokesEl.appendChild(makeStrokeChar(ch))
+    dictPanel.appendChild(strokesEl)
+
+    // Definition text
+    const infoEl = document.createElement('div')
+    infoEl.className = 'dict-info'
+
+    const wordEl = document.createElement('span')
+    wordEl.className = 'dict-word'
+    wordEl.textContent = word
+    infoEl.appendChild(wordEl)
+
     for (const { p, e } of entries) {
-      const defs = e.map(d => escapeHtml(d)).join('; ')
-      parts.push(`<span class="dict-entry"><span class="dict-pinyin">${escapeHtml(p)}</span><span class="dict-defs">${defs}</span></span>`)
+      const entryEl = document.createElement('span')
+      entryEl.className = 'dict-entry'
+      const pEl = document.createElement('span')
+      pEl.className = 'dict-pinyin'
+      pEl.textContent = p
+      const eEl = document.createElement('span')
+      eEl.className = 'dict-defs'
+      eEl.textContent = e.join('; ')
+      entryEl.append(pEl, eEl)
+      infoEl.appendChild(entryEl)
     }
-    dictPanel.innerHTML = parts.join('')
+    dictPanel.appendChild(infoEl)
+
   } catch (e) {
     dictPanel.innerHTML = '<span class="dict-none">Could not load dictionary</span>'
   }

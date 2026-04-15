@@ -34,6 +34,17 @@ export default defineConfig({
             },
           },
           {
+            urlPattern: /cdn\.jsdelivr\.net\/npm\/hanzi-writer-data/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'hanzi-writer-data',
+              expiration: {
+                maxEntries: 600,
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+              },
+            },
+          },
+          {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/,
             handler: 'CacheFirst',
             options: { cacheName: 'google-fonts-stylesheets' },
