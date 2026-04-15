@@ -186,34 +186,64 @@ practiceInput.addEventListener('keydown', e => {
   }
 })
 
+// Chinese and ASCII punctuation that is optional when typing
+const PUNCT = new Set('！？。，、；：\u201C\u201D\u2018\u2019（）【】…—·《》〈〉!?.,;:\'"()[]- ')
+
+function isPunct(ch) {
+  return PUNCT.has(ch)
+}
+
+// Map each character in target to a state ('correct'|'wrong'|'pending')
+// by consuming typed characters, skipping punctuation in target.
+// Punctuation is marked correct whether the user typed it or skipped it.
+function buildCharMap(target, typed) {
+  let typedIdx = 0
+  const states = []
+  let hasWrong = false
+
+  for (const ch of target) {
+    if (isPunct(ch)) {
+      if (typedIdx < typed.length && typed[typedIdx] === ch) {
+        typedIdx++ // user typed the punctuation — consume it
+      }
+      // always correct regardless
+      states.push('correct')
+    } else {
+      if (typedIdx >= typed.length) {
+        states.push('pending')
+      } else if (typed[typedIdx] === ch) {
+        states.push('correct')
+        typedIdx++
+      } else {
+        states.push('wrong')
+        hasWrong = true
+        typedIdx++
+      }
+    }
+  }
+
+  // allDone: no pending positions left AND no extra unconsumed typed chars
+  const allDone = !states.includes('pending') && typedIdx === typed.length
+  return { states, hasWrong, allDone }
+}
+
 function checkInput() {
   if (!state.current) return
   const typed = practiceInput.value
   const target = state.current.lines[state.lineIndex]
   const spans = targetLine.querySelectorAll('.char')
 
-  let allCorrect = true
+  const { states, hasWrong, allDone } = buildCharMap(target, typed)
 
-  for (let i = 0; i < target.length; i++) {
+  states.forEach((state, i) => {
     const span = spans[i]
-    if (i >= typed.length) {
-      span.classList.remove('char-correct', 'char-wrong')
-      span.classList.add('char-pending')
-      allCorrect = false
-    } else if (typed[i] === target[i]) {
-      span.classList.remove('char-pending', 'char-wrong')
-      span.classList.add('char-correct')
-    } else {
-      span.classList.remove('char-pending', 'char-correct')
-      span.classList.add('char-wrong')
-      allCorrect = false
-    }
-  }
+    span.classList.remove('char-pending', 'char-correct', 'char-wrong')
+    span.classList.add(`char-${state}`)
+  })
 
-  // If user has typed at least as many chars as target and all match → advance
-  if (typed.length >= target.length && allCorrect) {
+  if (allDone && !hasWrong) {
     onCorrect()
-  } else if (typed.length >= target.length && !allCorrect) {
+  } else if (allDone && hasWrong) {
     onWrong(target)
   }
 }
