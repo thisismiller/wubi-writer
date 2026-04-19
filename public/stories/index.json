@@ -38,5 +38,21 @@
     "level": "HSK 1",
     "file": "05-store.txt",
     "description": "A shopping trip with mum"
+  },
+  {
+    "id": "06-word-order",
+    "title": "我在学校",
+    "titleEn": "Word Order",
+    "level": "HSK 1",
+    "file": "06-word-order.txt",
+    "description": "Sentences with time, place, manner, instrument, target, and duration"
+  },
+  {
+    "id": "07-questions",
+    "title": "问问题",
+    "titleEn": "Questions",
+    "level": "HSK 1",
+    "file": "07-questions.txt",
+    "description": "Question words: 谁、什么时候、怎么、在哪儿、用什么、给谁、做什么、多久"
   }
 ]
