@@ -269,6 +269,29 @@ function isPunct(ch) {
   return PUNCT.has(ch)
 }
 
+// Return the canonical input value: auto-insert punctuation from target at
+// positions the user has already typed past, so the input stays aligned with
+// the target display.  Punct is inserted when the user has typed a char that
+// comes after it; trailing punct is left out (buildCharMap handles it).
+function withAutoInsertedPunct(target, typed) {
+  let typedIdx = 0
+  let result = ''
+
+  for (const ch of target) {
+    if (isPunct(ch)) {
+      const userTypedIt = typedIdx < typed.length && typed[typedIdx] === ch
+      if (userTypedIt) typedIdx++
+      // Only insert if the user has already typed past this position
+      if (userTypedIt || typedIdx < typed.length) result += ch
+    } else {
+      if (typedIdx >= typed.length) break
+      result += typed[typedIdx++]
+    }
+  }
+
+  return result
+}
+
 // Map each character in target to a state ('correct'|'wrong'|'pending')
 // by consuming typed characters, skipping punctuation in target.
 // Punctuation is marked correct whether the user typed it or skipped it.
@@ -306,9 +329,14 @@ function buildCharMap(target, typed) {
 function checkInput() {
   if (!state.current) return
   if (state.isTransitioning) return
-  const typed = practiceInput.value
   const target = state.current.lines[state.lineIndex]
   const spans = targetLine.querySelectorAll('.char')
+
+  // Auto-insert punctuation so the input stays visually aligned with the target
+  const canonical = withAutoInsertedPunct(target, practiceInput.value)
+  if (canonical !== practiceInput.value) practiceInput.value = canonical
+
+  const typed = practiceInput.value
 
   const { states, hasWrong, allDone } = buildCharMap(target, typed)
 
