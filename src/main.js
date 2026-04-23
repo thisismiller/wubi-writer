@@ -72,8 +72,9 @@ async function lookupAt(sentence, clickedIndex) {
 const state = {
   categories: [],        // loaded from index.json
   currentCategory: null, // selected category object
-  current: null,         // { meta, lines: string[] }
+  current: null,         // { meta, lines: string[], englishLines: string[] }
   lineIndex: 0,
+  mode: 'chinese',       // 'chinese' | 'english'
   isComposing: false,
   isTransitioning: false,
 }
@@ -96,6 +97,7 @@ const completeView  = $('complete-view')
 const restartBtn    = $('restart-btn')
 const homeBtn       = $('home-btn')
 const dictPanel     = $('dict-panel')
+const englishHint   = $('english-hint')
 
 // ── Navigation ────────────────────────────────────────────────────────────────
 function showView(name) {
@@ -166,24 +168,34 @@ function renderStoryList() {
 
   for (const meta of state.currentCategory.stories) {
     const card = document.createElement('div')
-    card.className = 'story-card'
-    card.tabIndex = 0
-    card.setAttribute('role', 'button')
+    card.className = 'story-card story-card--split'
     card.setAttribute('aria-label', `${meta.title} — ${meta.titleEn}`)
-    card.innerHTML = `
-      <div class="story-card-icon">📖</div>
-      <div class="story-card-body">
-        <h2>${meta.title} · ${meta.titleEn}</h2>
-        <p class="meta">
-          <span class="level-badge">${meta.level}</span>
-          ${escapeHtml(meta.description)}
-        </p>
-      </div>
+
+    const header = document.createElement('div')
+    header.className = 'story-card-header'
+    header.innerHTML = `
+      <h2>${meta.title} · ${meta.titleEn}</h2>
+      <p class="meta">
+        <span class="level-badge">${meta.level}</span>
+        ${escapeHtml(meta.description)}
+      </p>
     `
-    card.addEventListener('click', () => startStory(meta))
-    card.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') startStory(meta)
-    })
+
+    const halves = document.createElement('div')
+    halves.className = 'story-card-halves'
+
+    const zhBtn = document.createElement('button')
+    zhBtn.className = 'story-card-half'
+    zhBtn.textContent = '中文'
+    zhBtn.addEventListener('click', () => startStory(meta, 'chinese'))
+
+    const enBtn = document.createElement('button')
+    enBtn.className = 'story-card-half'
+    enBtn.textContent = 'English'
+    enBtn.addEventListener('click', () => startStory(meta, 'english'))
+
+    halves.append(zhBtn, enBtn)
+    card.append(header, halves)
     storyCards.appendChild(card)
   }
 }
@@ -195,7 +207,7 @@ function selectCategory(cat) {
 }
 
 // ── Story practice ────────────────────────────────────────────────────────────
-async function startStory(meta) {
+async function startStory(meta, mode = 'chinese') {
   const base = import.meta.env.BASE_URL
   let text
   try {
@@ -206,12 +218,13 @@ async function startStory(meta) {
     return
   }
 
-  const lines = text
-    .split('\n')
-    .map(l => l.trim())
-    .filter(l => l.length > 0)
+  const parseLines = s => s.split('\n').map(l => l.trim()).filter(l => l.length > 0)
+  const parts = text.split(/^---$/m)
+  const lines = parseLines(parts[0] ?? '')
+  const englishLines = parseLines(parts[1] ?? '')
 
-  state.current = { meta, lines }
+  state.current = { meta, lines, englishLines }
+  state.mode = mode
   state.lineIndex = 0
   showView('practice')
   renderLine(0)
@@ -260,6 +273,15 @@ function renderLine(index) {
   practiceArea.classList.remove('flash-correct', 'shake')
   dictPanel.hidden = true
   dictPanel.innerHTML = ''
+
+  // Show English translation as a hint in English mode
+  const enLine = state.current.englishLines[index]
+  if (state.mode === 'english' && enLine) {
+    englishHint.textContent = enLine
+    englishHint.hidden = false
+  } else {
+    englishHint.hidden = true
+  }
 
   // Update progress
   const total = lines.length
@@ -510,9 +532,7 @@ function showComplete() {
 
 restartBtn.addEventListener('click', () => {
   if (state.current) {
-    state.lineIndex = 0
-    showView('practice')
-    renderLine(0)
+    startStory(state.current.meta, state.mode)
   }
 })
 

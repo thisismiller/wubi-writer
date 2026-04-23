@@ -8,3 +8,14 @@
 我也吃了。
 再见！
 再见！明天见！
+---
+Hello!
+Hello! How are you?
+I'm doing well, thanks! And you?
+I'm well too.
+Good morning!
+Good morning! Have you eaten?
+Yes. And you?
+I've eaten too.
+Goodbye!
+Goodbye! See you tomorrow!

@@ -8,3 +8,14 @@
 我也在家里！
 我们都在家里。
 下雨天也很好！
+---
+It is raining today.
+We cannot go outside.
+Where is Dad?
+Dad is at home.
+Where is Mum?
+Mum is at home.
+Where am I?
+I am at home too!
+We are all at home.
+Rainy days are great too!

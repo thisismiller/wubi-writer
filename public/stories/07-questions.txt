@@ -8,3 +8,14 @@
 "你今天做什么？"
 "你学了多少分钟？"
 小明说："谢谢老师！"
+---
+The teacher asked Xiao Ming.
+"Who are you?"
+"When do you come to school?"
+"How did you get here?"
+"Where do you live?"
+"What do you use to study Chinese?"
+"Who did you call?"
+"What are you doing today?"
+"How many minutes did you study?"
+Xiao Ming said, "Thank you, teacher!"

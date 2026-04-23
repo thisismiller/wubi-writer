@@ -132,6 +132,63 @@ section.active {
   outline-offset: 2px;
 }
 
+/* Split story cards (Chinese / English mode chooser) */
+.story-card--split {
+  flex-direction: column;
+  padding: 0;
+  cursor: default;
+  gap: 0;
+}
+.story-card--split:hover {
+  box-shadow: var(--shadow);
+}
+.story-card-header {
+  padding: 1rem 1.5rem 0.75rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  width: 100%;
+  box-sizing: border-box;
+}
+.story-card-header h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.2rem;
+}
+.story-card-header .meta {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.story-card-halves {
+  display: flex;
+  width: 100%;
+}
+.story-card-half {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  text-align: center;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--text);
+  border-radius: 0;
+  transition: background 0.12s, color 0.12s;
+}
+.story-card-half:first-child {
+  border-right: 1px solid var(--border);
+  border-bottom-left-radius: 10px;
+}
+.story-card-half:last-child {
+  border-bottom-right-radius: 10px;
+}
+.story-card-half:hover,
+.story-card-half:focus-visible {
+  background: rgba(192, 57, 43, 0.08);
+  color: var(--red);
+  outline: none;
+}
+
 .story-card-icon {
   width: 52px;
   height: 52px;
@@ -199,6 +256,16 @@ section.active {
   max-width: 640px;
   width: 100%;
   text-align: right;
+}
+
+/* English translation hint shown in English mode */
+#english-hint {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  text-align: center;
+  max-width: min(90vw, 640px);
 }
 
 /* Practice area — target + input stacked and centered */
