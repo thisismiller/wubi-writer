@@ -274,7 +274,7 @@ function renderLine(index) {
   dictPanel.hidden = true
   dictPanel.innerHTML = ''
 
-  // Show English translation as a hint in English mode
+  // Show English translation as a hint in English mode; hide Chinese target
   const enLine = state.current.englishLines[index]
   if (state.mode === 'english' && enLine) {
     englishHint.textContent = enLine
@@ -282,6 +282,7 @@ function renderLine(index) {
   } else {
     englishHint.hidden = true
   }
+  targetLine.hidden = (state.mode === 'english')
 
   // Update progress
   const total = lines.length
@@ -292,11 +293,13 @@ function renderLine(index) {
   // If leading punct was pre-filled, mark those chars correct immediately
   if (leadingPunct) checkInput()
 
-  // Sync input width to target width after paint
+  // Sync input width to target width after paint; full-width in English mode
   requestAnimationFrame(() => {
-    const w = targetLine.getBoundingClientRect().width
-    if (w > 0) {
-      practiceInput.style.width = `${w}px`
+    if (state.mode === 'english') {
+      practiceInput.style.width = '100%'
+    } else {
+      const w = targetLine.getBoundingClientRect().width
+      if (w > 0) practiceInput.style.width = `${w}px`
     }
     practiceInput.focus()
   })
