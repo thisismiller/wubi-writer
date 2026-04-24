@@ -282,7 +282,7 @@ function renderLine(index) {
   } else {
     englishHint.hidden = true
   }
-  targetLine.hidden = (state.mode === 'english')
+  targetLine.classList.toggle('invisible', state.mode === 'english')
 
   // Update progress
   const total = lines.length
@@ -293,14 +293,10 @@ function renderLine(index) {
   // If leading punct was pre-filled, mark those chars correct immediately
   if (leadingPunct) checkInput()
 
-  // Sync input width to target width after paint; full-width in English mode
+  // Sync input width to target width after paint
   requestAnimationFrame(() => {
-    if (state.mode === 'english') {
-      practiceInput.style.width = '100%'
-    } else {
-      const w = targetLine.getBoundingClientRect().width
-      if (w > 0) practiceInput.style.width = `${w}px`
-    }
+    const w = targetLine.getBoundingClientRect().width
+    if (w > 0) practiceInput.style.width = `${w}px`
     practiceInput.focus()
   })
 }

@@ -292,7 +292,7 @@ section.active {
   align-items: flex-end;
   gap: var(--practice-letter);
 }
-#target-line[hidden] { display: none; }
+#target-line.invisible { visibility: hidden; }
 
 /* Each character + its wubi label stacked vertically */
 .char-wrapper {
